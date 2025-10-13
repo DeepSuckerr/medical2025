@@ -3,10 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 9091",
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "less": "^4.1.1",
+    "less-loader": "^11.0.0",
+    "@amap/amap-jsapi-loader": "^1.0.1",
+    "animate.css": "^4.1.1",
+    "axios": "^1.12.2",
+    "element-ui": "^2.4.5",
     "core-js": "^3.8.3",
     "vue": "^2.6.14",
     "vue-router": "^3.5.1",
