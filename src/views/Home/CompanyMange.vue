@@ -167,7 +167,7 @@ import {mapGetters} from "vuex";
 import rules from "../../utils/validator";
 import Home from "@/views/Home/Home.vue";
 import axios from '@/http/http.js'
-import {addCompanyInfo, deleteCompanyById} from "@/apis/DrugCompany.js";
+import {addCompanyInfo, deleteCompanyById, handleModifyCompany} from "@/apis/DrugCompany.js";
 
 
 export default {
@@ -200,13 +200,35 @@ export default {
 
 
 
+    handleModifyCompany(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const id = this.modifyForm.companyId;
+          const name = this.modifyForm.companyName;
+          const phone = this.modifyForm.companyPhone;
+          handleModifyCompany(id, name, phone).then(res => {
+            if (res.code === 200) {
+              this.$message.success("修改成功!");
+              this.getCompanyInfo(); // Refresh data
+            } else {
+              this.$message.error(res.msg || '修改失败');
+            }
+          }).catch(err => {
+            console.error("修改失败:", err);
+            this.$message.error("请求失败，请稍后再试");
+          });
+          this.modifyFormVisible = false;
+        } else {
+          return false;
+        }
+      });
+    },
+
     updatePage(obj) {
       this.modifyFormVisible = true;
       this.modifyForm = obj;
 
     },
-
-
 
     handleDeleteCompany(row) {
       console.log(row);

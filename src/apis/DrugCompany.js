@@ -28,4 +28,15 @@ export function deleteCompanyById(companyId) {
 
 
 
-
+export function handleModifyCompany(companyId,companyName,companyPhone) {
+    console.log()
+    return $axios({
+        method: 'POST',
+        url: "/drugCompany/updateCompany",
+        data: {
+            companyId: companyId,
+            companyName : companyName,
+            companyPhone : companyPhone
+        }
+    })
+}
