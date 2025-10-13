@@ -48,8 +48,8 @@
         <el-table-column prop="companyOperation" label="操作">
           <!-- 通过slot-scope拿到对应行的数据 -->
           <template slot-scope="scope">
-            <el-button size="mini" @click="">修改</el-button>
-            <el-button size="mini" type="danger" @click="handleDeleteCompany()">删除</el-button>
+            <el-button size="mini" @click="updatePage(scope.row)">修改</el-button>
+            <el-button size="mini" type="danger" @click="handleDeleteCompany(scope.row.companyId)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -109,57 +109,55 @@
         >
       </div>
     </el-dialog>
-    <!-- 点击修改后的弹窗 -->
-    <!--    <el-dialog-->
-    <!--        title="修改医药公司信息"-->
-    <!--        :visible.sync="modifyFormVisible"-->
-    <!--        :modal-append-to-body="false"-->
-    <!--        @close="handleModifyClose"-->
-    <!--    >-->
-    <!--      <el-form-->
-    <!--          :model="modifyForm"-->
-    <!--          hide-required-asterisk-->
-    <!--          ref="modifyForm"-->
-    <!--          label-width="110px"-->
-    <!--      >-->
-    <!--        <el-form-item label="医药公司编号">-->
-    <!--          <el-input-->
-    <!--              v-model="modifyForm.companyId"-->
-    <!--              autocomplete="off"-->
-    <!--              disabled-->
-    <!--          ></el-input>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item-->
-    <!--            label="公司名称"-->
-    <!--            prop="companyName"-->
-    <!--            :rules="rules.nameRules"-->
-    <!--        >-->
-    <!--          <el-input-->
-    <!--              v-model.trim="modifyForm.companyName"-->
-    <!--              autocomplete="off"-->
-    <!--              required-->
-    <!--          ></el-input>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item-->
-    <!--            label="公司电话"-->
-    <!--            prop="companyPhone"-->
-    <!--            :rules="rules.phoneRules"-->
-    <!--        >-->
-    <!--          <el-input-->
-    <!--              v-model.number="modifyForm.companyPhone"-->
-    <!--              autocomplete="off"-->
-    <!--              required-->
-    <!--          ></el-input>-->
-    <!--        </el-form-item>-->
-    <!--      </el-form>-->
-    <!--      <div slot="footer" class="dialog-footer">-->
-    <!--        <el-button @click="modifyFormVisible = false">取 消</el-button>-->
-    <!--        <el-button type="primary" @click="handleModifyCompany('modifyForm')"-->
-    <!--        >确 定-->
-    <!--        </el-button-->
-    <!--        >-->
-    <!--      </div>-->
-    <!--    </el-dialog>-->
+        <el-dialog
+            title="修改医药公司信息"
+            :visible.sync="modifyFormVisible"
+            :modal-append-to-body="false"
+        >
+          <el-form
+              v-bind:model="modifyForm"
+              hide-required-asterisk
+              ref="modifyForm"
+              label-width="110px"
+          >
+            <el-form-item label="医药公司编号">
+              <el-input
+                  v-model="modifyForm.companyId"
+                  autocomplete="off"
+                  disabled
+              ></el-input>
+            </el-form-item>
+            <el-form-item
+                label="公司名称"
+                prop="companyName"
+                :rules="rules.nameRules"
+            >
+              <el-input
+                  v-model.trim="modifyForm.companyName"
+                  autocomplete="off"
+                  required
+              ></el-input>
+            </el-form-item>
+            <el-form-item
+                label="公司电话"
+                prop="companyPhone"
+                :rules="rules.phoneRules"
+            >
+              <el-input
+                  v-model.number="modifyForm.companyPhone"
+                  autocomplete="off"
+                  required
+              ></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="modifyFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="handleModifyCompany('modifyForm')"
+            >确 定
+            </el-button
+            >
+          </div>
+        </el-dialog>
   </el-container>
 </template>
 
@@ -169,7 +167,7 @@ import {mapGetters} from "vuex";
 import rules from "../../utils/validator";
 import Home from "@/views/Home/Home.vue";
 import axios from '@/http/http.js'
-import DrugCompany, {addCompanyInfo} from "@/apis/DrugCompany.js"
+import {addCompanyInfo, deleteCompanyById} from "@/apis/DrugCompany.js";
 
 
 export default {
@@ -201,9 +199,44 @@ export default {
   methods: {
 
 
-    handleDeleteCompany(companyId) {
+
+    updatePage(obj) {
+      this.modifyFormVisible = true;
+      this.modifyForm = obj;
+
+    },
 
 
+
+    handleDeleteCompany(row) {
+      console.log(row);
+      this.$confirm('此操作将永久删除该公司信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+
+      }).then(() => {
+
+        deleteCompanyById(row).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.getCompanyInfo(); // 重新加载数据
+          } else {
+            this.$message.error(res.msg || '删除失败');
+          }
+        }).catch(err => {
+          console.error("删除失败:", err);
+          this.$message.error('请求失败，请稍后再试');
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
     },
 
 
