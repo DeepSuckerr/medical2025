@@ -23,7 +23,7 @@
         <el-col :span="23" class="search-col">
           <keep-alive>
             <el-input
-                placeholder="查询（输入要查询的公司名称）"
+                placeholder="查询（输入要查询的公司名称、编号或电话号码）"
                 size="small"
                 v-model="keyword"
                 @input="handelQuery"
@@ -55,14 +55,12 @@
       </el-table>
       <!-- 分页 -->
       <div class="pagination">
-        <!--        <pagination
-                    :current-page.sync="currentPage"
+              <pagination
+                    :page.sync="currentPage"
                     :layout="'total,prev,pager,next,jumper'"
-                    :total="tableData.total"
+                    :total="total"
                     :page-size.sync="pageSize"
-                    @currentChange="handleCurrentChange($event)"
-                    @update:page="currentPage = $event"
-                ></pagination>-->
+                ></pagination>
       </div>
     </el-main>
     <!-- 点击新增后的弹窗 -->
@@ -162,17 +160,18 @@
 </template>
 
 <script>
-/*import Pagination from "../../components/Pagination";*/
 import {mapGetters} from "vuex";
 import rules from "../../utils/validator";
 import Home from "@/views/Home/Home.vue";
 import axios from '@/http/http.js'
 import {addCompanyInfo, deleteCompanyById, handleModifyCompany} from "@/apis/DrugCompany.js";
+import Pagination from "@/layout/components/Pagination.vue";
 
 
 export default {
   name: "CompanyManage",
   components: {
+    Pagination,
     Home
     /* Pagination,*/
   },
@@ -182,12 +181,13 @@ export default {
       drugCompanyData: [],
       currentPage: 1,
       pageSize: 5, // 每页的数据条数
-      keywordDefault: "",
+      keyword: "",
       addFormVisible: false, // 控制新增公司页面的显示
       addForm: {
         companyName: "",
         companyPhone: "",
       },
+      total: 0,
       modifyFormVisible: false, // 控制修改信息页面的显示
       modifyForm: {
         companyId: "",
@@ -197,8 +197,6 @@ export default {
     };
   },
   methods: {
-
-
 
     handleModifyCompany(formName) {
       this.$refs[formName].validate((valid) => {
@@ -286,18 +284,28 @@ export default {
     },
 
 
-    // 切换分页及首次进入获取数据
     getCompanyInfo() {
-      axios.get("http://localhost:8081/drugCompany/getCompanyAll").then(res => {
-        if (res.code === 200) {
-          this.drugCompanyData = res.data;
-        }
-      });
+      this.handelQuery();
     },
     // 处理搜索
     handelQuery() {
-      console.log("处理搜索:", this.keyword);
+      axios.get("/drugCompany/getCompanyAll", {
+
+        params: {
+          key: this.keyword,
+          currentPage: this.currentPage,
+          pageSize: this.pageSize
+        },
+
+      })
+          .then(res => {
+            // 假设返回的数据结构是 { data: { records: [], total: 0 } }
+            // 你可能需要根据实际的后端返回结构来调整
+            this.drugCompanyData = res.data.records;
+            this.total = res.data.total;
+          })
     },
+
     // 关闭新增弹窗
     handleAddClose() {
       console.log("关闭新增弹窗");
@@ -312,15 +320,15 @@ export default {
     ...mapGetters({
       tableData: "companyInfo",
     }), //后端返回的数据
-    keyword: {
-      get() {
-        return this.keywordDefault;
-      },
-      set(val) {
-        this.keywordDefault = val;
-      },
-    },
   },
+  watch: {
+    pageSize: {
+      handler: "handelQuery"
+    },
+    currentPage: {
+      handler: "handelQuery"
+    }
+  }
 };
 </script>
 
