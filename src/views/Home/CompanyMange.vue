@@ -188,6 +188,7 @@ export default {
         companyPhone: "",
       },
       total: 0,
+      pageBeforeSearch: 1, // 记录搜索前的页码
       modifyFormVisible: false, // 控制修改信息页面的显示
       modifyForm: {
         companyId: "",
@@ -309,7 +310,7 @@ export default {
     // 关闭新增弹窗
     handleAddClose() {
       console.log("关闭新增弹窗");
-      this.$refs.addForm.resetFields();
+        this.$refs.addForm.resetFields();
     },
   },
   //   当挂载时渲染默认数据，代码如下。
@@ -322,6 +323,19 @@ export default {
     }), //后端返回的数据
   },
   watch: {
+    keyword(newVal, oldVal) {
+      // 当用户开始搜索时（从无到有），记录当前页码
+      if (!oldVal && newVal) {
+        this.pageBeforeSearch = this.currentPage;
+      }
+      // 当用户取消搜索时（从有到无），恢复到之前的页码
+      if (oldVal && !newVal) {
+        this.currentPage = this.pageBeforeSearch;
+        this.$nextTick(() => {
+          this.handelQuery();
+        });
+      }
+    },
     pageSize: {
       handler: "handelQuery"
     },
