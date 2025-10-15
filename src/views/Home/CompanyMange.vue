@@ -55,12 +55,12 @@
       </el-table>
       <!-- 分页 -->
       <div class="pagination">
-              <pagination
-                    :page.sync="currentPage"
-                    :layout="'total,prev,pager,next,jumper'"
-                    :total="total"
-                    :page-size.sync="pageSize"
-                ></pagination>
+        <pagination
+            :page.sync="currentPage"
+            :layout="'total,prev,pager,next,jumper'"
+            :total="total"
+            :page-size.sync="pageSize"
+        ></pagination>
       </div>
     </el-main>
     <!-- 点击新增后的弹窗 -->
@@ -107,55 +107,55 @@
         >
       </div>
     </el-dialog>
-        <el-dialog
-            title="修改医药公司信息"
-            :visible.sync="modifyFormVisible"
-            :modal-append-to-body="false"
+    <el-dialog
+        title="修改医药公司信息"
+        :visible.sync="modifyFormVisible"
+        :modal-append-to-body="false"
+    >
+      <el-form
+          v-bind:model="modifyForm"
+          hide-required-asterisk
+          ref="modifyForm"
+          label-width="110px"
+      >
+        <el-form-item label="医药公司编号">
+          <el-input
+              v-model="modifyForm.companyId"
+              autocomplete="off"
+              disabled
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+            label="公司名称"
+            prop="companyName"
+            :rules="rules.nameRules"
         >
-          <el-form
-              v-bind:model="modifyForm"
-              hide-required-asterisk
-              ref="modifyForm"
-              label-width="110px"
-          >
-            <el-form-item label="医药公司编号">
-              <el-input
-                  v-model="modifyForm.companyId"
-                  autocomplete="off"
-                  disabled
-              ></el-input>
-            </el-form-item>
-            <el-form-item
-                label="公司名称"
-                prop="companyName"
-                :rules="rules.nameRules"
-            >
-              <el-input
-                  v-model.trim="modifyForm.companyName"
-                  autocomplete="off"
-                  required
-              ></el-input>
-            </el-form-item>
-            <el-form-item
-                label="公司电话"
-                prop="companyPhone"
-                :rules="rules.phoneRules"
-            >
-              <el-input
-                  v-model.number="modifyForm.companyPhone"
-                  autocomplete="off"
-                  required
-              ></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="modifyFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="handleModifyCompany('modifyForm')"
-            >确 定
-            </el-button
-            >
-          </div>
-        </el-dialog>
+          <el-input
+              v-model.trim="modifyForm.companyName"
+              autocomplete="off"
+              required
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+            label="公司电话"
+            prop="companyPhone"
+            :rules="rules.phoneRules"
+        >
+          <el-input
+              v-model.number="modifyForm.companyPhone"
+              autocomplete="off"
+              required
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="modifyFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleModifyCompany('modifyForm')"
+        >确 定
+        </el-button
+        >
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 

@@ -86,6 +86,11 @@ export default {
            type: 'success',
            message: res.msg
          })
+
+
+         //前端存储整个对象
+         localStorage.setItem("LoginUser",JSON.stringify(res.data))
+
          this.$router.push('/home/wel');
        }else{
          this.$message({
