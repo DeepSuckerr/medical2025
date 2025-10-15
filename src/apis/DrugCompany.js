@@ -10,6 +10,9 @@ export function addCompanyInfo(companyName, companyPhone) {
             companyName: companyName,
             companyPhone: companyPhone
 
+        },
+        headers:{
+            token : localStorage.getItem("token"),
         }
     })
 }
@@ -22,6 +25,9 @@ export function deleteCompanyById(companyId) {
         url: "/drugCompany/deleteCompany",
         params: {
             companyId : companyId
+        },
+        headers:{
+            token : localStorage.getItem("token"),
         }
     })
 }
@@ -37,6 +43,11 @@ export function handleModifyCompany(companyId,companyName,companyPhone) {
             companyId: companyId,
             companyName : companyName,
             companyPhone : companyPhone
+
+        },
+        headers:{
+            token : localStorage.getItem("token"),
         }
+
     })
 }

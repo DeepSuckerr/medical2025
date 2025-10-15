@@ -266,6 +266,7 @@ export default {
           const name = this.addForm.companyName;
           const phone = this.addForm.companyPhone;
           addCompanyInfo(name, phone).then(res => {
+
             if (res.code === 200) {
               this.$message.success("新增成功!");
               this.getCompanyInfo(); // Refresh data
@@ -290,13 +291,14 @@ export default {
     // 处理搜索
     handelQuery() {
       axios.get("/drugCompany/getCompanyAll", {
-
         params: {
           key: this.keyword,
           currentPage: this.currentPage,
-          pageSize: this.pageSize
+          pageSize: this.pageSize,
         },
-
+        headers: {
+          token: localStorage.getItem("token")
+        }
       })
           .then(res => {
             // 假设返回的数据结构是 { data: { records: [], total: 0 } }

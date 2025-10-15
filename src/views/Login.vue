@@ -91,6 +91,8 @@ export default {
          //前端存储整个对象
          localStorage.setItem("LoginUser",JSON.stringify(res.data))
 
+         localStorage.setItem("token", res.data.token)
+
          this.$router.push('/home/wel');
        }else{
          this.$message({
