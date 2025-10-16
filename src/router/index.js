@@ -4,6 +4,7 @@ import Login from "@/views/Login.vue";
 import Welcome from "@/views/Home/Welcome.vue";
 import Home from "@/views/Home/Home.vue";
 import CompanyMange from "@/views/Home/CompanyMange.vue";
+import DoctorManage from "@/views/Home/DoctorManage.vue";
 
 
 Vue.use(VueRouter)
@@ -36,6 +37,10 @@ const routes = [
         {
           path:"company",
           component: CompanyMange
+        },
+        {
+          path:"DoctorManage",
+          component: DoctorManage
         },
       ]
   },

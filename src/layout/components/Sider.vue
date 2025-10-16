@@ -47,7 +47,7 @@ export default {
         <i class="el-icon-bangzhu"></i>
         <span slot="title">医药公司政策管理</span>
       </el-menu-item>
-      <el-menu-item index="7">
+      <el-menu-item index="/home/DoctorManage">
         <i class="el-icon-copy-document"></i>
         <span slot="title">医生信息管理</span>
       </el-menu-item>
