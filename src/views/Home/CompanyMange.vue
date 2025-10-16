@@ -290,9 +290,9 @@ export default {
     },
     // 处理搜索
     handelQuery() {
-      axios.get("/drugCompany/getCompanyAll", {
+      axios.get("/drug/getCompanyAll", {
         params: {
-          key: this.keyword,
+          keyword: this.keyword,
           currentPage: this.currentPage,
           pageSize: this.pageSize,
         },
@@ -301,10 +301,12 @@ export default {
         }
       })
           .then(res => {
-            // 假设返回的数据结构是 { data: { records: [], total: 0 } }
-            // 你可能需要根据实际的后端返回结构来调整
-            this.drugCompanyData = res.data.records;
-            this.total = res.data.total;
+            if (res.code === 200) {
+              this.drugCompanyData = res.data.records;
+              this.total = res.data.total;
+            } else{
+
+            }
           })
     },
 

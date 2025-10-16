@@ -84,7 +84,7 @@ export default {
        if (res.code === 200) {
          this.$message({
            type: 'success',
-           message: res.msg
+           message: res.message
          })
 
 
@@ -97,7 +97,7 @@ export default {
        }else{
          this.$message({
            type: 'error',
-           message: res.msg
+           message: res.message
          })
        }
      })

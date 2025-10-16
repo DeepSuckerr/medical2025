@@ -5,7 +5,7 @@ export function addCompanyInfo(companyName, companyPhone) {
 
     return $axios({
         method: 'POST',
-        url: '/drugCompany/addCompany',
+        url: '/drug/addCompany',
         data: {
             companyName: companyName,
             companyPhone: companyPhone
@@ -21,11 +21,8 @@ export function addCompanyInfo(companyName, companyPhone) {
 export function deleteCompanyById(companyId) {
     console.log(companyId)
     return $axios({
-        method: 'POST',
-        url: "/drugCompany/deleteCompany",
-        params: {
-            companyId : companyId
-        },
+        method: 'DELETE',
+        url: "/drug/deleteCompany/" + companyId,
         headers:{
             token : localStorage.getItem("token"),
         }
@@ -38,7 +35,7 @@ export function handleModifyCompany(companyId,companyName,companyPhone) {
     console.log()
     return $axios({
         method: 'POST',
-        url: "/drugCompany/updateCompany",
+        url: "/drug/updateCompany",
         data: {
             companyId: companyId,
             companyName : companyName,
