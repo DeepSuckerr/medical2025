@@ -84,13 +84,20 @@ export default {
        if (res.code === 200) {
          this.$message({
            type: 'success',
-           message: res.msg
+           message: res.message
          })
+
+
+         //前端存储整个对象
+         localStorage.setItem("LoginUser",JSON.stringify(res.data))
+
+         localStorage.setItem("token", res.data.token)
+
          this.$router.push('/home/wel');
        }else{
          this.$message({
            type: 'error',
-           message: res.msg
+           message: res.message
          })
        }
      })

@@ -4,8 +4,10 @@
     </div>
     <div class="main-head">
       <div class="main-head-right">
-        <span>欢迎来到慧医数字医疗应用系统，当前用户：<span id="username"></span></span>
-        <div class="exit-area" @click="">
+        <span>欢迎来到慧医数字医疗应用系统，当前用户：<span id="username">
+        {{loginUser}}
+        </span></span>
+        <div class="exit-area" @click="handleLogout">
           <p class="iconfont icon-tuichu"></p>
           <p class="logout">退出登录</p>
         </div>
@@ -16,20 +18,28 @@
 <script>
 export default {
   name: "PageHeader",
+
+  data(){
+    return{
+      loginUser: ""
+    }
+
+  },
   methods: {
     handleLogout() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userInfo");
+      localStorage.removeItem("LoginUser");
       this.$message.warning("已退出登录");
-      this.$router.replace("/user/login");
+      this.$router.replace("/");
       this.$router.go(0);
     },
   },
-  computed: {
-    userName() {
-      return JSON.parse(localStorage.getItem("userInfo")).realname;
-    },
-  },
+  mounted() {
+   var user =  JSON.parse(localStorage.getItem("LoginUser"))
+    if (user) {
+      this.loginUser = user.uname;
+    }
+  }
+
 };
 </script>
 <style lang="less" scoped>
