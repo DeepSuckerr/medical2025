@@ -304,8 +304,6 @@ export default {
             if (res.code === 200) {
               this.drugCompanyData = res.data.records;
               this.total = res.data.total;
-            } else{
-
             }
           })
     },

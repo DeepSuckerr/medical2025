@@ -42,7 +42,7 @@
         </el-table-column>
         <el-table-column prop="name" label="医生姓名">
         </el-table-column>
-        <el-table-column prop="phoneNumber" label="联系电话">
+        <el-table-column prop="phone" label="联系电话">
         </el-table-column>
         <el-table-column label="操作">
           <!-- 通过slot-scope拿到对应行的数据 -->
@@ -286,6 +286,7 @@
 <script>
 import { mapGetters } from "vuex";
 import Pagination from "@/layout/components/Pagination.vue";
+import axios from '@/http/http.js'
 
 export default {
   name: "DoctorManage",
@@ -446,7 +447,7 @@ export default {
           const pwd = this.addForm.pwd;
 
           // TODO: 调用后端接口新增医生
-          console.log("新增医生信息:", this.addForm);
+          console.log(" :", this.addForm);
 
           // 模拟成功
           this.$message.success("新增成功!");
@@ -465,62 +466,25 @@ export default {
 
     // 处理搜索
     handleQuery() {
-      // TODO: 调用后端接口查询医生信息
-      console.log("查询参数:", {
-        keyword: this.keyword,
-        currentPage: this.currentPage,
-        pageSize: this.pageSize,
-      });
+      axios.get("/doctor/getDoctorAll", {
+        params: {
+          keyword: this.keyword,
+          currentPage: this.currentPage,
+          pageSize: this.pageSize,
+        },
 
-      // 模拟数据
-      this.doctorData = [
-        {
-          id: 11265491,
-          name: "张伟",
-          age: 45,
-          sex: 1,
-          levelId: 1,
-          phoneNumber: "13888345678",
-          typeId: 1,
-        },
-        {
-          id: 11265468,
-          name: "李娜",
-          age: 38,
-          sex: 2,
-          levelId: 2,
-          phoneNumber: "18653476589",
-          typeId: 4,
-        },
-        {
-          id: 11265467,
-          name: "王强",
-          age: 42,
-          sex: 1,
-          levelId: 1,
-          phoneNumber: "18365784765",
-          typeId: 5,
-        },
-        {
-          id: 11265466,
-          name: "刘芳",
-          age: 35,
-          sex: 2,
-          levelId: 3,
-          phoneNumber: "15235386666",
-          typeId: 3,
-        },
-        {
-          id: 11265465,
-          name: "陈明",
-          age: 40,
-          sex: 1,
-          levelId: 2,
-          phoneNumber: "13465378737",
-          typeId: 2,
-        },
-      ];
-      this.total = 6;
+        headers: {
+          token: localStorage.getItem("token")
+        }
+
+      }).then((res) => {
+        if (res.code === 200) {
+          this.doctorData = res.data.records;
+          this.total = res.data.total;
+        }
+
+
+      })
     },
 
     // 关闭新增弹窗
