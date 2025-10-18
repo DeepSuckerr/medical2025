@@ -92,7 +92,7 @@
             :rules="rules.phoneRules"
         >
           <el-input
-              v-model.number="addForm.phoneNumber"
+              v-model="addForm.phoneNumber"
               autocomplete="off"
               required
           ></el-input>
@@ -142,7 +142,7 @@
             <el-option
                 v-for="item in treatTypeList"
                 :key="item.id"
-                :label="item.name"
+                :label="item.departmentName"
                 :value="item.id"
             >
             </el-option>
@@ -216,7 +216,7 @@
             :rules="rules.phoneRules"
         >
           <el-input
-              v-model.number="modifyForm.phoneNumber"
+              v-model="modifyForm.phoneNumber"
               autocomplete="off"
               required
           ></el-input>
@@ -266,7 +266,7 @@
             <el-option
                 v-for="item in treatTypeList"
                 :key="item.id"
-                :label="item.name"
+                :label="item.departmentName"
                 :value="item.id"
             >
             </el-option>
@@ -287,6 +287,7 @@
 import { mapGetters } from "vuex";
 import Pagination from "@/layout/components/Pagination.vue";
 import axios from '@/http/http.js'
+import {addDoctorInfo, updateDoctorInfo, getAllLevels, getAllTypes, deleteDoctorInfo} from "@/apis/DoctorAPI";
 
 export default {
   name: "DoctorManage",
@@ -357,74 +358,95 @@ export default {
         typeId: "",
       },
       // 医生级别列表
-      levelList: [
-        { id: 1, name: "主任医师" },
-        { id: 2, name: "副主任医师" },
-        { id: 3, name: "主治医师" },
-        { id: 4, name: "住院医师" },
-      ],
+      levelList: [],
       // 科室列表
-      treatTypeList: [
-        { id: 1, name: "心内科" },
-        { id: 2, name: "外科" },
-        { id: 3, name: "儿科" },
-        { id: 4, name: "妇产科" },
-        { id: 5, name: "骨科" },
-        { id: 6, name: "神经内科" },
-        { id: 7, name: "呼吸内科" },
-      ],
+      treatTypeList: [],
     };
   },
   methods: {
+    // 获取下拉框数据
+    async fetchSelectionData() {
+      try {
+        const levelsRes = await getAllLevels();
+        if (levelsRes.code === 200) {
+          this.levelList = levelsRes.data;
+        } else {
+          this.$message.error("获取医生级别列表失败");
+        }
+
+        const typesRes = await getAllTypes();
+        if (typesRes.code === 200) {
+          this.treatTypeList = typesRes.data;
+        } else {
+          this.$message.error("获取科室列表失败");
+        }
+      } catch (error) {
+        console.error("获取下拉框数据失败:", error);
+        this.$message.error("请求下拉框数据失败，请稍后再试");
+      }
+    },
+
     // 修改医生信息
     handleModifyDoctor(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          const id = this.modifyForm.id;
-          const name = this.modifyForm.name;
-          const phone = this.modifyForm.phoneNumber;
-          const age = this.modifyForm.age;
-          const sex = this.modifyForm.sex;
-          const levelId = this.modifyForm.levelId;
-          const typeId = this.modifyForm.typeId;
-
-          // TODO: 调用后端接口修改医生信息
-          console.log("修改医生信息:", this.modifyForm);
-
-          // 模拟成功
-          this.$message.success("修改成功!");
-          this.getDoctorInfo(); // 刷新数据
-          this.modifyFormVisible = false;
+          updateDoctorInfo(this.modifyForm).then(res => {
+            if (res.code === 200) {
+              this.$message.success("修改成功!");
+              this.modifyFormVisible = false; // 在成功后关闭弹窗
+              this.getDoctorInfo(); // 重新加载数据
+            }else {
+              this.$message.error(res.msg || '修改失败');
+            }
+          }).catch(err => {
+            console.error("修改失败:", err);
+            this.$message.error("请求失败，请稍后再试");
+          });
         } else {
           return false;
         }
       });
     },
 
+
+
     // 点击修改按钮
     updatePage(obj) {
       this.modifyFormVisible = true;
-      this.modifyForm = obj;
+      // 创建一个新对象以避免直接修改表格数据，并正确映射字段
+      this.modifyForm = {
+        id: obj.id,
+        name: obj.name,
+        phoneNumber: obj.phone, // 将 obj.phone 映射到 modifyForm.phoneNumber
+        age: obj.age,
+        sex: obj.sex,
+        levelId: obj.levelId,
+        typeId: obj.typeId,
+      };
     },
 
     // 删除医生
     handleDeleteDoctor(row) {
-      console.log(row);
       this.$confirm("此操作将永久删除该医生信息, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
           .then(() => {
-            // TODO: 调用后端接口删除医生
-            console.log("删除医生 ID:", row);
-
-            // 模拟成功
-            this.$message({
-              type: "success",
-              message: "删除成功!",
+            deleteDoctorInfo(row).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                });
+                this.getDoctorInfo(); // 重新加载数据
+              } else {
+                this.$message.error(res.msg || '删除失败');
+              }
+            }).catch(err => {
+              console.error("删除失败:", err);
+              this.$message.error('请求失败，请稍后再试');
             });
-            this.getDoctorInfo(); // 重新加载数据
           })
           .catch(() => {
             this.$message({
@@ -438,20 +460,17 @@ export default {
     handleAddDoctor(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          const name = this.addForm.name;
-          const phone = this.addForm.phoneNumber;
-          const age = this.addForm.age;
-          const sex = this.addForm.sex;
-          const levelId = this.addForm.levelId;
-          const typeId = this.addForm.typeId;
-          const pwd = this.addForm.pwd;
+          addDoctorInfo(this.addForm).then(res => {
 
-          // TODO: 调用后端接口新增医生
-          console.log(" :", this.addForm);
-
-          // 模拟成功
-          this.$message.success("新增成功!");
-          this.getDoctorInfo(); // 刷新数据
+            if (res.code === 200) {
+              this.$message.success("新增成功!");
+            }else {
+              this.$message.error(res.msg || '新增失败');
+            }
+          }).catch(err => {
+            console.error("新增失败:", err);
+            this.$message.error("请求失败，请稍后再试");
+          });
           this.addFormVisible = false;
         } else {
           return false;
@@ -496,6 +515,7 @@ export default {
   // 当挂载时渲染默认数据
   mounted() {
     this.getDoctorInfo(); // 首次渲染
+    this.fetchSelectionData(); // 获取下拉框数据
   },
   computed: {
     ...mapGetters({
